@@ -45,12 +45,12 @@ Restart your web profile (`dsh web`) and hard-refresh the browser. No settings p
 2. Drag files/folders from your file manager anywhere on the page — a full-page dim + hint appears — or just Ctrl+V files (pasting folders works too).
 3. Attachment mode:
    - Dropped items appear **instantly** as chips (images show their thumbnail right away).
-   - Pending chips show a **live progress bar** (fast-index → full-disk, updated in real time).
+   - Pending chips show a **real-time ring progress** (fast-index → full-disk, percentage climbs live).
    - **Images** → rail chips with a **thumbnail preview** (✕ remove, hover shows the **full real path**).
    - **Other files / folders** → removable chips (hover shows the **full real path**).
    - After send, the message shows **attachment cards** (thumbnail / file icon + name) — no raw path text; the agent receives the real paths underneath and reads them with dsh-vision-toolkit / document tools.
    - Press send without typing — the send button activates once every queued path is resolved.
-4. Path mode: each dropped/pasted entry shows a **live progress chip** (parallel, per-entry progress), and located real paths are inserted into the draft line by line (a picker appears when several same-named candidates exist).
+4. Path mode: each dropped/pasted entry shows a **real-time ring progress chip** (parallel, per-entry percentage), and located real paths are inserted into the draft line by line (a picker appears when several same-named candidates exist).
 5. The agent reads the files with dsh-vision-toolkit / document tools.
 
 Files are **never** copied or uploaded to `.drops/` — the attachment references the original file location.
