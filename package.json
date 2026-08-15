@@ -50,7 +50,7 @@
     "package.json",
     "LICENSE",
     "README.md",
-    "README.zh.md"
+    "README.en.md"
   ],
   "license": "BSD-3-Clause"
 }
