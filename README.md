@@ -20,14 +20,14 @@ Composer tool-row button: `📎 附件` / `📄 路径` — choice persists in l
 | | Attachment mode (default) | Path mode |
 |---|---|---|
 | Drop anywhere / paste (incl. folders) | ✅ | ✅ |
-| Images | **native thumbnail attachment** (sends as thumbnail) | real path inserted |
+| Images | chip with **thumbnail preview** referencing the real path | real path inserted |
 | Any other file (no extension whitelist) | chip referencing the **real path** (hover shows it) | real path inserted |
 | Folders | 📁 chip referencing the folder path | folder path inserted |
-| Send | images send natively as thumbnails; files/folders append their real paths | paths already in draft |
+| Send | message shows **attachment cards** (image thumbnail / file icon + name, **no raw path text**); the agent still receives the real paths underneath | paths already in draft |
 | Files copied/uploaded? | **never** (no `.drops/` copies) | never |
 | Send without typing | ✅ (invisible draft filler enables the button) | n/a |
 
-> Note: images sent as **native thumbnail attachments** require a model with image input (a multimodal model shows them in the conversation; a text-only model's preflight rejects image attachments — switch to **path mode** then, or send files/folders only). Files/folders must be **locatable to their real path** (current workspace first, then registered workspaces, Desktop/Documents/Downloads, OS index, bounded recursive search); a visible toast explains when locating fails — nothing is silently dropped.
+> Note: every attachment must be **locatable to its real path** (current workspace first, then registered workspaces, Desktop/Documents/Downloads, OS index, bounded recursive search); a visible toast explains when locating fails — nothing is silently dropped. Thumbnails in sent messages are rendered by a local read-only proxy and **cost zero model tokens** — only the real-path text ever reaches the model.
 
 ## Install
 
@@ -44,8 +44,9 @@ Restart your web profile (`dsh web`) and hard-refresh the browser. No settings p
 1. Pick the mode in the composer tool row (`📎` default).
 2. Drag files/folders from your file manager anywhere on the page — a full-page dim + hint appears — or just Ctrl+V files (pasting folders works too).
 3. Attachment mode:
-   - **Images** → native thumbnail cards (preview / ✕ remove); they send as thumbnails.
-   - **Other files / folders** → removable chips (hover shows the **full real path**); their real paths are appended to the message on send.
+   - **Images** → rail chips with a **thumbnail preview** (✕ remove, hover shows the **full real path**).
+   - **Other files / folders** → removable chips (hover shows the **full real path**).
+   - After send, the message shows **attachment cards** (thumbnail / file icon + name) — no raw path text; the agent receives the real paths underneath and reads them with dsh-vision-toolkit / document tools.
    - Press send without typing — works.
 4. Path mode: located real paths are inserted into the draft line by line (a picker appears when several same-named candidates exist).
 5. The agent reads the files with dsh-vision-toolkit / document tools.
