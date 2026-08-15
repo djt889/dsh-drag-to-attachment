@@ -86,7 +86,7 @@ each completing before the next starts:
 | macOS | Spotlight (`mdfind`, built-in) | millisecond |
 | Linux | **Bundled Everything-style index** (Node: background scan of home + /mnt + /media, in-memory name index) | millisecond after first build |
 
-> Unlocatable files are saved into `<workspace>/.dsh-drag-to-attachment/pasted-images/` as a fallback; freshly pasted screenshots (no disk file) are saved directly.
+> **Pasted screenshots are copied straight into `<workspace>/.drops/`** (no index search, instant); unlocatable files are also saved there as a fallback. Clean `.drops/` whenever you like.
 
 ## Compatibility
 

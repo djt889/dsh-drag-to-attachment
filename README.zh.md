@@ -85,7 +85,7 @@ dsh-drag-to-attachment/
 | macOS | Spotlight（`mdfind`，系统自带） | 毫秒级 |
 | Linux | **内置 Everything 式索引**（Node 实现：后台扫描 home+/mnt+/media，内存文件名索引） | 毫秒级（首次索引后台建立） |
 
-> 定位不到的文件自动保存到工作区 `.dsh-drag-to-attachment/pasted-images/`（fallback）；粘贴的新截图（磁盘上不存在）直接保存。
+> **粘贴的截图直接复制**到工作区 `.drops/`（不索引，秒级）；**索引不到的**文件也自动保存到 `.drops/`（fallback）。`.drops/` 可随时清理。
 
 ## 兼容性
 
