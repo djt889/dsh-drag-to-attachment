@@ -44,11 +44,13 @@ dsh plugin --profile web add /path/to/dsh-drag-to-attachment
 1. 输入框工具行确认模式（`📎 附件` 默认 / `📄 路径`）；
 2. 从文件管理器拖入文件或文件夹到页面任意位置（全页面压暗 + 提示出现），或直接 Ctrl+V 粘贴（粘贴文件夹也支持）；
 3. 附件模式：
+   - 拖入/粘贴 → 附件方块**立即出现**（图片即时显示缩略图）；
+   - 定位中的方块底部有**实时进度条**（快速索引 → 全盘搜索，进度实时更新）；
    - **图片** → 附件栏方块（**缩略图预览**，✕ 移除，hover 显示完整真实路径）；
    - **其他文件/文件夹** → 附件栏方块（✕ 移除，**hover 显示完整真实路径**）；
    - 发送后：消息里显示**附件卡片**（图片缩略图 / 文件图标 + 文件名），不显示路径文本；agent 底层收到真实路径（配合 dsh-vision-toolkit 读取）；
-   - 不输入任何文字也可以直接发送；
-4. 路径模式：命中的真实路径逐行插入草稿（多个同名候选时弹出选择列表），直接发送；
+   - 不输入任何文字也可以直接发送（**所有附件路径就绪后**发送按钮才激活）；
+4. 路径模式：拖入/粘贴时每个文件显示**实时进度条 chip**（多个文件并行、各自独立进度），命中后路径逐行插入草稿（多个同名候选时弹出选择列表）；
 5. agent 配合 dsh-vision-toolkit / 文档工具读取路径对应的文件。
 
 文件**不会被**复制或上传到工作区 `.drops/`——附件引用的就是原始文件位置。
@@ -60,20 +62,30 @@ dsh-drag-to-attachment/
 ├─ package.json        bundle 声明（dsh.bundle.patch / dsh.client）
 ├─ cordis.patch.yml    挂载行（insert drag-to-attachment）
 ├─ lib/
-│  ├─ index.js         host：POST /_dsh/drag-to-attachment/locate（路径定位，仅此一个路由）
-│  └─ client.js        browser：全局拖拽/粘贴 + 双模式分发 + 图片原生缩略图 + 文件/文件夹方块 + 发送 + 模式开关
+│  ├─ index.js         host：/locate（分阶段定位）· /save（fallback 保存）· /file（缩略图代理）
+│  └─ client.js        browser：全局拖拽/粘贴 + 双模式 + 实时进度条 + 附件卡片 + 发送
+├─ vendor/everything/  内置 Everything（Windows 免安装全盘索引，voidtools freeware）
 ├─ LICENSE             BSD-3-Clause
 └─ README.md / README.zh.md
 ```
 
-## 路径定位
+## 路径定位（实时分阶段）
 
-多阶段协议（移植自 bill9109/dsh-drag-and-drop）：
+拖入/粘贴后立即显示进度，搜索按两阶段进行（**每阶段完成才进入下一阶段**）：
 
-1. 当前工作区 → 其他已注册工作区 → 桌面/文档/下载 三层浅探；
-2. 操作系统索引（Windows：Everything CLI → PowerShell；macOS：Spotlight；Linux：plocate/locate）；
-3. 有边界的递归搜索（每根 ≤20,000 项、深度 ≤12）；
-4. 多个同名候选 → 按文件名+大小过滤 → 采样指纹（开头/中间/结尾 64KB）→ 必要时完整 SHA-256 → 仍相同则弹路径选择列表。
+1. **快速索引（tier-fast，毫秒级）**：工作区/常用目录浅探 → 操作系统索引；
+2. **全盘搜索（tier-full）**：有边界的递归搜索（每根 ≤100,000 项、深度 ≤24）+ 全盘索引；
+3. 多个同名候选 → 按文件名+大小过滤 → 采样指纹（开头/中间/结尾 64KB）→ 必要时完整 SHA-256 → 仍相同则弹路径选择列表。
+
+**各平台索引（开箱即用，无需安装）**：
+
+| 平台 | 索引方案 | 说明 |
+|---|---|---|
+| Windows | **内置 Everything**（`vendor/everything/`，host 自动启动，es.exe 查询） | 毫秒级 |
+| macOS | Spotlight（`mdfind`，系统自带） | 毫秒级 |
+| Linux | **内置 Everything 式索引**（Node 实现：后台扫描 home+/mnt+/media，内存文件名索引） | 毫秒级（首次索引后台建立） |
+
+> 定位不到的文件自动保存到工作区 `.dsh-drag-to-attachment/pasted-images/`（fallback）；粘贴的新截图（磁盘上不存在）直接保存。
 
 ## 兼容性
 
@@ -85,4 +97,4 @@ dsh-drag-to-attachment/
 
 ## 许可证
 
-BSD-3-Clause——路径定位代码移植自 [bill9109/dsh-drag-and-drop](https://github.com/bill9109/dsh-drag-and-drop)（BSD-3-Clause）。详见 [LICENSE](LICENSE)。
+BSD-3-Clause——路径定位代码移植自 [bill9109/dsh-drag-and-drop](https://github.com/bill9109/dsh-drag-and-drop)（BSD-3-Clause）；内置 Everything 为 [voidtools](https://www.voidtools.com) 免费软件（freeware）。详见 [LICENSE](LICENSE)。

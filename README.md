@@ -44,11 +44,13 @@ Restart your web profile (`dsh web`) and hard-refresh the browser. No settings p
 1. Pick the mode in the composer tool row (`📎` default).
 2. Drag files/folders from your file manager anywhere on the page — a full-page dim + hint appears — or just Ctrl+V files (pasting folders works too).
 3. Attachment mode:
+   - Dropped items appear **instantly** as chips (images show their thumbnail right away).
+   - Pending chips show a **live progress bar** (fast-index → full-disk, updated in real time).
    - **Images** → rail chips with a **thumbnail preview** (✕ remove, hover shows the **full real path**).
    - **Other files / folders** → removable chips (hover shows the **full real path**).
    - After send, the message shows **attachment cards** (thumbnail / file icon + name) — no raw path text; the agent receives the real paths underneath and reads them with dsh-vision-toolkit / document tools.
-   - Press send without typing — works.
-4. Path mode: located real paths are inserted into the draft line by line (a picker appears when several same-named candidates exist).
+   - Press send without typing — the send button activates once every queued path is resolved.
+4. Path mode: each dropped/pasted entry shows a **live progress chip** (parallel, per-entry progress), and located real paths are inserted into the draft line by line (a picker appears when several same-named candidates exist).
 5. The agent reads the files with dsh-vision-toolkit / document tools.
 
 Files are **never** copied or uploaded to `.drops/` — the attachment references the original file location.
@@ -60,20 +62,31 @@ dsh-drag-to-attachment/
 ├─ package.json        bundle declaration (dsh.bundle.patch / dsh.client)
 ├─ cordis.patch.yml    mount row (insert drag-to-attachment)
 ├─ lib/
-│  ├─ index.js         host: POST /_dsh/drag-to-attachment/locate (the only route — path locator)
-│  └─ client.js        browser: global drag/paste + dual-mode dispatch + native image thumbnails + file/folder chips + send + toggle
+│  ├─ index.js         host: /locate (progressive tiers) · /save (fallback) · /file (thumbnail proxy)
+│  └─ client.js        browser: global drag/paste + dual modes + live progress bars + attachment cards + send
+├─ vendor/everything/  bundled Everything for Windows (voidtools freeware, zero install)
 ├─ LICENSE             BSD-3-Clause
 └─ README.md / README.zh.md
 ```
 
-## Path locating
+## Path locating (real-time, progressive)
 
-Multi-phase protocol (ported from bill9109/dsh-drag-and-drop):
+Progress is shown immediately after drop/paste; the search runs in two tiers,
+each completing before the next starts:
 
-1. Current workspace → other registered workspaces → Desktop/Documents/Downloads shallow probe;
-2. OS index (Windows: Everything CLI → PowerShell; macOS: Spotlight; Linux: plocate/locate);
-3. Bounded recursive search (≤20,000 entries per root, depth ≤12);
-4. Multiple same-named candidates → filter by name+size → sample fingerprint (head/middle/tail 64KB) → full SHA-256 if needed → a path picker when still ambiguous.
+1. **Fast tier (tier-fast, ms)**: shallow probes (workspace / Desktop / Documents / Downloads) → OS index;
+2. **Full tier (tier-full)**: bounded recursive search (≤100,000 entries per root, depth ≤24) + broad mounts;
+3. Multiple same-named candidates → filter by name+size → sample fingerprint (head/middle/tail 64KB) → full SHA-256 if needed → a path picker when still ambiguous.
+
+**Per-platform index — zero install on all three:**
+
+| Platform | Index | Notes |
+|---|---|---|
+| Windows | **Bundled Everything** (`vendor/everything/`, auto-started by the host, queried via es.exe) | millisecond |
+| macOS | Spotlight (`mdfind`, built-in) | millisecond |
+| Linux | **Bundled Everything-style index** (Node: background scan of home + /mnt + /media, in-memory name index) | millisecond after first build |
+
+> Unlocatable files are saved into `<workspace>/.dsh-drag-to-attachment/pasted-images/` as a fallback; freshly pasted screenshots (no disk file) are saved directly.
 
 ## Compatibility
 
