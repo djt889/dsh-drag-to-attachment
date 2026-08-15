@@ -11,7 +11,7 @@
 
 - Browsers never hand the real filesystem path of a dropped/pasted file to a web page — but DSH operates on real files and its tools read real local paths. This plugin closes that gap: it **locates** the dropped file back to its true location and references it as an attachment (**no copies, no `.drops/` uploads**).
 - **Images** keep the native DSH attachment experience (thumbnail card, preview, remove) and **send as thumbnails** — no conversion.
-- **Other files / folders**: DSH cannot attach non-images natively, so they appear as chips in the attachment rail (hover shows the real path) and their real paths are appended as plain text on send — the agent reads them with dsh-vision-toolkit (`vision_glance` / `vision_pixel_diff` / long-screenshot OCR) or document tools.
+- **Other files / folders**: DSH cannot attach non-images natively, so they appear as chips in the attachment rail (hover shows the real path) and their real paths are appended as plain text on send — the agent reads them with a vision plugin (e.g. dsh-vision-toolkit) or document tools.
 
 ## Two modes (one toggle)
 
@@ -48,10 +48,10 @@ Restart your web profile (`dsh web`) and hard-refresh the browser. No settings p
    - Pending chips show a **real-time ring progress** (fast-index → full-disk, percentage climbs live).
    - **Images** → rail chips with a **thumbnail preview** (✕ remove, hover shows the **full real path**).
    - **Other files / folders** → removable chips (hover shows the **full real path**).
-   - After send, the message shows **attachment cards** (thumbnail / file icon + name) — no raw path text; the agent receives the real paths underneath and reads them with dsh-vision-toolkit / document tools.
+   - After send, the message shows **attachment cards** (thumbnail / file icon + name) — no raw path text; the agent receives the real paths underneath and reads them with a vision plugin / document tools.
    - Press send without typing — the send button activates once every queued path is resolved.
 4. Path mode: each dropped/pasted entry shows a **real-time ring progress chip** (parallel, per-entry percentage), and located real paths are inserted into the draft line by line (a picker appears when several same-named candidates exist).
-5. The agent reads the files with dsh-vision-toolkit / document tools.
+5. The agent reads the files with a vision plugin / document tools.
 
 **Attachment dedupe**: an attachment with the same name AND path as an existing chip is compared by **MD5** — identical content is reported as "already uploaded" and not added; same name with a different path is a different file and is always added (no MD5 needed).
 
