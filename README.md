@@ -1,6 +1,6 @@
 # dsh-drag-to-attachment
 
-> A dsh-plugin for the [DeepSeek Harness](https://github.com/deepseek-ai/dsh) web UI: drag or paste **any local file or folder** anywhere on the page and turn it into a composer **attachment that references its real filesystem path** (nothing is uploaded or copied) or, with one toggle, insert the real path directly into the draft. Works with text-only models via dsh-vision-toolkit.
+> A dsh-plugin for the [DeepSeek Harness](https://github.com/deepseek-ai/dsh) web UI: drag or paste **any local file or folder** anywhere on the page — **images** keep the native thumbnail attachment experience and send as thumbnails; **every other file and whole folders** are located to their **real filesystem path** and referenced as chips (nothing is uploaded or copied), with the real path appended on send. One toggle also inserts the real paths directly into the draft.
 
 [![dsh-plugin](https://img.shields.io/badge/dsh--plugin-%E2%9C%93-5B4CF0?style=flat-square)](https://github.com/topics/dsh-plugin)
 [![License](https://img.shields.io/badge/License-BSD--3--Clause-blue.svg)](LICENSE)
@@ -9,9 +9,9 @@
 
 ## Why
 
-- DSH's native attachment channel only accepts **images**, and sending them to a text-only model (e.g. deepseek) is rejected by the host image preflight (`attachment-error: Model does not support image input`). PDFs, Office docs, videos, etc. cannot be attachments at all.
-- This plugin bypasses that preflight: an attachment only **references** the original file path (no copies, no `.drops/` uploads), and on send the path reaches the model as plain text — the agent reads the files with dsh-vision-toolkit / document tools, and no image block ever hits the wire.
-- Path mode just inserts the real paths, ported from [bill9109/dsh-drag-and-drop](https://github.com/bill9109/dsh-drag-and-drop).
+- Browsers never hand the real filesystem path of a dropped/pasted file to a web page — but DSH operates on real files and its tools read real local paths. This plugin closes that gap: it **locates** the dropped file back to its true location and references it as an attachment (**no copies, no `.drops/` uploads**).
+- **Images** keep the native DSH attachment experience (thumbnail card, preview, remove) and **send as thumbnails** — no conversion.
+- **Other files / folders**: DSH cannot attach non-images natively, so they appear as chips in the attachment rail (hover shows the real path) and their real paths are appended as plain text on send — the agent reads them with dsh-vision-toolkit (`vision_glance` / `vision_pixel_diff` / long-screenshot OCR) or document tools.
 
 ## Two modes (one toggle)
 
@@ -19,15 +19,15 @@ Composer tool-row button: `📎 附件` / `📄 路径` — choice persists in l
 
 | | Attachment mode (default) | Path mode |
 |---|---|---|
-| Drop anywhere / paste files (incl. folders) | ✅ | ✅ |
-| Images | chip referencing the real path | real path inserted |
-| Any other file (no extension whitelist) | chip referencing the real path | real path inserted |
+| Drop anywhere / paste (incl. folders) | ✅ | ✅ |
+| Images | **native thumbnail attachment** (sends as thumbnail) | real path inserted |
+| Any other file (no extension whitelist) | chip referencing the **real path** (hover shows it) | real path inserted |
 | Folders | 📁 chip referencing the folder path | folder path inserted |
-| Send | original paths appended as plain text + your text | paths already in draft |
+| Send | images send natively as thumbnails; files/folders append their real paths | paths already in draft |
 | Files copied/uploaded? | **never** (no `.drops/` copies) | never |
 | Send without typing | ✅ (invisible draft filler enables the button) | n/a |
 
-> In attachment mode each file must be **locatable to its real path** (current workspace first, then registered workspaces, Desktop/Documents/Downloads, OS index, bounded recursive search). When locating fails (e.g. an unsaved clipboard screenshot) a visible toast explains — nothing is silently dropped.
+> Note: images sent as **native thumbnail attachments** require a model with image input (a multimodal model shows them in the conversation; a text-only model's preflight rejects image attachments — switch to **path mode** then, or send files/folders only). Files/folders must be **locatable to their real path** (current workspace first, then registered workspaces, Desktop/Documents/Downloads, OS index, bounded recursive search); a visible toast explains when locating fails — nothing is silently dropped.
 
 ## Install
 
@@ -43,11 +43,14 @@ Restart your web profile (`dsh web`) and hard-refresh the browser. No settings p
 
 1. Pick the mode in the composer tool row (`📎` default).
 2. Drag files/folders from your file manager anywhere on the page — a full-page dim + hint appears — or just Ctrl+V files (pasting folders works too).
-3. Attachment mode: located items appear as removable chips in the attachment rail (hover shows the **full path**). Press send without typing — the original paths are appended to your message as plain text.
+3. Attachment mode:
+   - **Images** → native thumbnail cards (preview / ✕ remove); they send as thumbnails.
+   - **Other files / folders** → removable chips (hover shows the **full real path**); their real paths are appended to the message on send.
+   - Press send without typing — works.
 4. Path mode: located real paths are inserted into the draft line by line (a picker appears when several same-named candidates exist).
 5. The agent reads the files with dsh-vision-toolkit / document tools.
 
-Files are **never** copied or uploaded to `.drops/` — the path IS the original file location.
+Files are **never** copied or uploaded to `.drops/` — the attachment references the original file location.
 
 ## Structure
 
@@ -56,9 +59,8 @@ dsh-drag-to-attachment/
 ├─ package.json        bundle declaration (dsh.bundle.patch / dsh.client)
 ├─ cordis.patch.yml    mount row (insert drag-to-attachment)
 ├─ lib/
-│  ├─ index.js         host: POST /_dsh/drag-to-attachment/locate (path locator)
-│  │                        (/import upload route kept only for legacy compat; client no longer calls it)
-│  └─ client.js        browser: global drag/paste + dual-mode dispatch + rail chips + send appends original paths + toggle
+│  ├─ index.js         host: POST /_dsh/drag-to-attachment/locate (the only route — path locator)
+│  └─ client.js        browser: global drag/paste + dual-mode dispatch + native image thumbnails + file/folder chips + send + toggle
 ├─ LICENSE             BSD-3-Clause
 └─ README.md / README.zh.md
 ```
@@ -74,8 +76,8 @@ Multi-phase protocol (ported from bill9109/dsh-drag-and-drop):
 
 ## Compatibility
 
-Tested on the current DeepSeek Harness (web profile, bundle model). It relies on a few **unpublished internal interfaces** (`conversation` service, `sendSession`/`draftImages`, the `_attachments` rail class, `webServer` routes, the workspace registry) and may need adapting after DSH upgrades.
+Tested on the current DeepSeek Harness (web profile, bundle model). It relies on a few **unpublished internal interfaces** (`conversation` service, `sendSession`/`draftImages`/`createDraftImages`, the `_attachments` rail class, `webServer` routes, the workspace registry) and may need adapting after DSH upgrades.
 
 ## License
 
-BSD-3-Clause — portions ported from [bill9109/dsh-drag-and-drop](https://github.com/bill9109/dsh-drag-and-drop) (BSD-3-Clause) and [loudMore/dsh-drop-to-path](https://github.com/loudMore/dsh-drop-to-path) (MIT). See [LICENSE](LICENSE).
+BSD-3-Clause — the path-locating code is ported from [bill9109/dsh-drag-and-drop](https://github.com/bill9109/dsh-drag-and-drop) (BSD-3-Clause). See [LICENSE](LICENSE).
