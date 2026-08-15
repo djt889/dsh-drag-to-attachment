@@ -2,8 +2,7 @@ BSD 3-Clause License
 
 Copyright (c) 2026, djt889
 Copyright (c) 2026, dsh-external
-Portions derived from bill9109/dsh-drag-and-drop (BSD-3-Clause)
-and loudMore/dsh-drop-to-path (MIT).
+Portions derived from bill9109/dsh-drag-and-drop (BSD-3-Clause).
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
