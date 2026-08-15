@@ -1,0 +1,4 @@
+# dsh-drag-to-attachment bundle patch: mounts the plugin into a profile layer stack.
+- insert:
+    - id: drag-to-attachment
+      name: '@dsh-external/dsh-drag-to-attachment'

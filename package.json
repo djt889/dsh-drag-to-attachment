@@ -1,0 +1,56 @@
+{
+  "name": "@dsh-external/dsh-drag-to-attachment",
+  "description": "dsh-plugin for DeepSeek Harness (DSH) web UI: drop or paste any local file/folder anywhere on the page as attachments (images, any files, whole folders) or locate real filesystem paths — one toggle, two modes.",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/djt889/dsh-drag-to-attachment.git"
+  },
+  "homepage": "https://github.com/djt889/dsh-drag-to-attachment",
+  "bugs": {
+    "url": "https://github.com/djt889/dsh-drag-to-attachment/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "drag-and-drop",
+    "attachment",
+    "web-ui"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1"
+  },
+  "peerDependenciesMeta": {
+    "@deepseek-ai/cordis": {
+      "optional": true
+    }
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "package.json",
+    "LICENSE",
+    "README.md",
+    "README.zh.md"
+  ],
+  "license": "BSD-3-Clause"
+}
