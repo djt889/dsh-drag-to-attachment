@@ -53,6 +53,8 @@ Restart your web profile (`dsh web`) and hard-refresh the browser. No settings p
 4. Path mode: each dropped/pasted entry shows a **real-time ring progress chip** (parallel, per-entry percentage), and located real paths are inserted into the draft line by line (a picker appears when several same-named candidates exist).
 5. The agent reads the files with dsh-vision-toolkit / document tools.
 
+**Attachment dedupe**: an attachment with the same name AND path as an existing chip is compared by **MD5** — identical content is reported as "already uploaded" and not added; same name with a different path is a different file and is always added (no MD5 needed).
+
 Files are **never** copied or uploaded to `.drops/` — the attachment references the original file location.
 
 ## Structure
