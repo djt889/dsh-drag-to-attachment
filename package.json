@@ -1,7 +1,7 @@
 {
   "name": "@dsh-external/dsh-drag-to-attachment",
   "description": "dsh-plugin for DeepSeek Harness (DSH) web UI: drop or paste any local file/folder anywhere on the page as attachments (images, any files, whole folders) or locate real filesystem paths — one toggle, two modes.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
