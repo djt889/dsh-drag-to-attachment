@@ -57,6 +57,10 @@ Restart your web profile (`dsh web`) and hard-refresh the browser. No settings p
 
 Files are **never** copied or uploaded to `.drops/` — the attachment references the original file location.
 
+## Inline image preview (`image_preview` tool)
+
+The plugin ships a model tool **`image_preview`**: the agent calls it with a local image path, gets back a markdown image pointing at the plugin's read-only /file proxy, and pastes it into its reply — the image then renders **directly inside the conversation** (ChatGPT-style preview of generated/captured images). No upload, no copy.
+
 ## Structure
 
 ```

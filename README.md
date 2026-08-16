@@ -57,6 +57,10 @@ dsh plugin --profile web add /path/to/dsh-drag-to-attachment
 
 文件**不会被**复制或上传到工作区 `.drops/`——附件引用的就是原始文件位置。
 
+## 会话内图片预览（`image_preview` 工具）
+
+插件内置一个模型工具 **`image_preview`**：agent 调用它（传本地图片路径），工具返回一段 markdown 图片（指向插件的只读 /file 代理），agent 把 markdown 放进回复正文后，**图片直接显示在会话对话流里**（类似网页版 ChatGPT 的生图预览）——无需上传、不复制文件。适用于"生图/截图/转换结果"直接发给你预览的场景。
+
 ## 文件结构
 
 ```
